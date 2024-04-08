@@ -1,6 +1,12 @@
-const express = require('express');
-const { registerUser,authUser, getUser, updateUser, deleteUser } = require('../controllers/userController');
-const router = express.Router()
+const express = require("express");
+const {
+  registerUser,
+  authUser,
+  getUser,
+  updateUser,
+  deleteUser,
+} = require("../controllers/userController");
+const router = express.Router();
 const { protect } = require("../middlewares/authMiddleware");
 
 router.route("/register").post(registerUser);

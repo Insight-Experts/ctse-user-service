@@ -1,20 +1,17 @@
-const jwt = require ("jsonwebtoken");
-const User = require ("../models/userModel.js");
-const asyncHandler = require ("express-async-handler");
+const jwt = require("jsonwebtoken");
+const User = require("../models/userModel.js");
+const asyncHandler = require("express-async-handler");
 
-const protect = asyncHandler(async (req, res, next) => {//protect api from unauthorized access
+const protect = asyncHandler(async (req, res, next) => {
   let token;
 
   if (
-      req.headers.authorization &&//check authorization headers
-      
-    req.headers.authorization.startsWith("Bearer")//check for token named barer 
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      token = req.headers.authorization.split(" ")[1];//taking the token out
-
-      //decodes token id
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);//verify token ID
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.user = await User.findById(decoded.id).select("-password");
 
