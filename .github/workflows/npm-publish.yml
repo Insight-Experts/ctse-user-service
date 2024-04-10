@@ -1,4 +1,4 @@
-name: Node.js CI/CD user
+name: Node.js CI/CD
 
 on:
   push:
@@ -9,38 +9,55 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
-
+  BuildandTest:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-
+    name: Build and Test
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install dependencies
+      run: npm install
+    - name: Build
+      run: npm run build --if-present
+    - name: Depcheck
+      uses: dependency-check/Dependency-Check_Action@main
+      id: Depcheck
+      with:
+        project: 'test'
+        path: '.' # Update this path if necessary
+        format: 'HTML'
+        out: 'reports'
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+    - name: Upload Test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: Depcheck-report
+        path: ${{ github.workspace }}/reports
+    - name: Test
+      run: npm test
+  SnykSecurityScan:
+    needs: BuildandTest
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Install Snyk CLI
+      run: npm install -g snyk
+    - name: Authenticate with Snyk
+      run: snyk auth ${{ secrets.SNYK_API_TOKEN }}
+    - name: Snyk Scan
+      run: snyk test --json > snyk_report.json || true
+    - name: Upload Snyk report
+      if: always()
+      uses: actions/upload-artifact@v2
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Install Dependencies
-      run: npm ci
-
-    - name: Build
-      run: npm run build --if-present
-
-    - name: Test
-      run: npm test
-
-  docker:
-
-    needs: build-and-test
+        name: snyk-report
+        path: snyk_report.json
+  Containerlization:
+    needs: BuildandTest
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -49,12 +66,19 @@ jobs:
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_TOKKEN }}
+        password: ${{ secrets.DOCKER_TOKKEN  }} # Using Docker password secret
 
-    - name: Build and push Docker image to dockerhub
-      uses: docker/build-push-action@v2
+    - name: Build Docker image
+      run: |
+        docker build -t insightexperts/user-service:v1.0.0.2 .
+
+    - name: Scan Docker image for vulnerabilities
+      run: |
+        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/root/ aquasec/trivy image insightexperts/user-service:v1.0.0.2 > trivy_report.json || true
+
+    - name: Upload Trivy report
+      if: always()
+      uses: actions/upload-artifact@v2
       with:
-        context: .
-        file: ./dockerfile # Path to Dockerfile
-        push: true
-        tags: insightexperts/user-service:v1.0.0.2
+        name: trivy-report
+        path: trivy_report.json
