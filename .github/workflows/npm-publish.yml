@@ -90,45 +90,15 @@ jobs:
     needs: Containerization
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Deploy to Kubernetes
-      uses: azure/k8s-deploy@v1
-      with:
-        azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-        images: ctse2024/user-service:v1.0.0.0
-        namespace: default
-        manifests: |
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: user-deployment
-          spec:
-            replicas: 3
-            selector:
-              matchLabels:
-                app: user
-            template:
-              metadata:
-                labels:
-                  app: user
-              spec:
-                containers:
-                - name: user
-                  image: ctse2024/user-service:v1.0.0.0
-                  ports:
-                  - containerPort: 5002
-          ---
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: user-service
-          spec:
-            selector:
-              app: user
-            ports:
-              - protocol: TCP
-                port: 80
-                targetPort: 5002
-            type: LoadBalancer
+      - name: Deploy to Kubernetes
+        uses: azure/k8s-deploy@v1
+        with:
+          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          images: ctse2024/user-service:v1.0.0.0
+          namespace: default
+          manifests: |
+            kubernetes/user-deployment.yaml
+            kubernetes/user-service.yaml
