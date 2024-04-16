@@ -1,4 +1,4 @@
-name: Node.js CI/CD user-service
+name: Node.js CI/CD
 
 on:
   push:
@@ -85,20 +85,3 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: |
         docker push ctse2024/user-service:v1.0.0.0
-  Deployment:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up kubectl
-        uses: azure/aks-set-context@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          cluster-name: ctse-cluster
-          resource-group: ctse-resource-group
-      - name: Deploy user-service
-        run: |
-          kubectl apply -f kubernetes/user-deployment.yaml
-          kubectl apply -f kubernetes/user-service.yaml
