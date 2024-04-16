@@ -87,7 +87,7 @@ jobs:
         docker push ctse2024/user-service:v1.0.0.0
         
   DeployToAKS:
-    needs: BuildandTest
+    needs: Containerization
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
