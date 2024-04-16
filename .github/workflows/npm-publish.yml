@@ -86,16 +86,8 @@ jobs:
       run: |
         docker push ctse2024/user-service:v1.0.0.0
 
-  CheckClusterConfiguration:
-    needs: Containerization
-    runs-on: ubuntu-latest
-    name: Check Kubernetes Configuration
-    steps:
-      - name: Get Kubernetes Contexts
-        run: kubectl config get-contexts
-
   DeployToAKS:
-    needs: [Containerization, CheckClusterConfiguration]
+    needs: Containerization
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -116,8 +108,7 @@ jobs:
         az group list
     - name: Set Azure subscription
       run: az account set --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }}
+    - name: Set AKS context
+      run: az aks get-credentials --resource-group ${{ secrets.AZ_RESOURCE_GROUP }} --name ${{ secrets.AZ_CLUSTER }}
     - name: Deploy to AKS
-      run: |
-        kubectl apply -f kubernetes/user-deployment.yaml --validate=false
-        kubectl apply -f kubernetes/user-service.yaml --validate=false
-
+      run: kubectl apply -f kubernetes/
