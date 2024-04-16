@@ -85,9 +85,36 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: |
         docker push ctse2024/user-service:v1.0.0.0
-        
-  DeployToAKS:
+
+  CheckClusterConnectivity:
     needs: Containerization
+    runs-on: ubuntu-latest
+    name: Check Cluster Connectivity
+    steps:
+      - name: Check Cluster Connectivity
+        run: kubectl get nodes
+
+  CheckAPIServerAccess:
+    needs: Containerization
+    runs-on: ubuntu-latest
+    name: Check API Server Access
+    steps:
+      - name: Check API Server Access
+        run: kubectl cluster-info
+
+  CheckClusterHealth:
+    needs: Containerization
+    runs-on: ubuntu-latest
+    name: Check Cluster Health
+    steps:
+      - name: Check AKS Node Status
+        run: az aks nodepool show --resource-group ctse-resource-group --cluster-name ctse-cluster --name nodepool1 --query '[provisioningState, kubernetesVersion, nodeCount, mode]' -o table
+
+      - name: Check AKS Cluster Status
+        run: az aks show --resource-group ctse-resource-group --name ctse-cluster --query 'provisioningState' -o table
+
+  DeployToAKS:
+    needs: [Containerization, CheckClusterConnectivity, CheckAPIServerAccess, CheckClusterHealth]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
