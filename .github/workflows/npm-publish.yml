@@ -56,7 +56,7 @@ jobs:
         name: snyk-report
         path: snyk_report.json
   Containerization:
-    needs: BuildandTest
+    needs: SnykSecurityScan
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
