@@ -107,7 +107,7 @@ jobs:
         az account show
         az group list
     - name: Validate Subscription ID
-      run: ECHO ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+      run: echo ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
       
     - name: Set Azure subscription
       run: az account set --subscription "e1d97d64-f21c-484c-bafe-9efd5cda48e3"
