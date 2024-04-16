@@ -85,3 +85,26 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: |
         docker push ctse2024/user-service:v1.0.0.0
+  DeployToAKS:
+      needs: BuildandTest
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Azure CLI
+        uses: azure/setup-azure-cli@v1
+        with:
+          install-script: |
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Login to Azure
+        run: az login --service-principal -u ${{ secrets.AZURE_CREDENTIALS.clientId }} -p ${{ secrets.AZURE_CREDENTIALS.clientSecret }} --tenant ${{ secrets.AZURE_CREDENTIALS.tenantId }}
+
+      - name: Set Azure subscription
+        run: az account set --subscription ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+
+      - name: Deploy to AKS
+        run: |
+          kubectl apply -f kubernetes/user-deployment.yaml
+          kubectl apply -f kubernetes/user-service.yaml
