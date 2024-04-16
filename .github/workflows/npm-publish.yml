@@ -116,7 +116,7 @@ jobs:
                 - name: user
                   image: ctse2024/user-service:v1.0.0.0
                   ports:
-                  - containerPort: 8080
+                  - containerPort: 5002
           ---
           apiVersion: v1
           kind: Service
@@ -128,5 +128,5 @@ jobs:
             ports:
               - protocol: TCP
                 port: 80
-                targetPort: 8080
+                targetPort: 5002
             type: LoadBalancer
