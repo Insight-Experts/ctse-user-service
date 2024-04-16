@@ -85,7 +85,6 @@ jobs:
     - name: Push Docker image to Docker Hub
       run: |
         docker push ctse2024/user-service:v1.0.0.0
-
   Deployment:
     needs: Containerization
     runs-on: ubuntu-latest
@@ -93,12 +92,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Kubectl
+        uses: azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          cluster-name: ctse-cluster
+          resource-group: ctse-resource-group
+
       - name: Deploy to Kubernetes
         uses: azure/k8s-deploy@v1
         with:
-          azure-credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          images: ctse2024/user-service:v1.0.0.0
+          manifests: kubernetes/user-deployment.yaml, kubernetes/user-service.yaml
           namespace: default
-          manifests: |
-            kubernetes/user-deployment.yaml
-            kubernetes/user-service.yaml
+          images: ctse2024/user-service:v1.0.0.0
