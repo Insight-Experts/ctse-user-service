@@ -106,8 +106,14 @@ jobs:
       run: |
         az account show
         az group list
+    - name: Validate Subscription ID
+      run: |
+        if [ -z "${{ secrets.AZURE_CREDENTIALS.subscriptionId }}" ]; then
+          echo "ERROR: Subscription ID is empty. Please provide a valid subscription ID in the AZURE_CREDENTIALS secret."
+          exit 1
+        fi    
     - name: Set Azure subscription
-      run: az account set --subscription e1d97d64-f21c-484c-bafe-9efd5cda48e3
+      run: az account set --subscription "e1d97d64-f21c-484c-bafe-9efd5cda48e3"
 
     - name: Deploy to AKS
       run: |
