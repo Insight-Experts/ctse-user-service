@@ -95,7 +95,7 @@ jobs:
       - name: Set up Kubectl
         uses: azure/aks-set-context@v1
         with:
-          creds: '{"appId": "653a6a83-853a-4a6b-b15c-18a5807ca32c", "password": "***", "tenant": "84c31ca0-ac3b-4eae-ad11-519d80233e6f"}'
+          creds:  ${{ secrets.AZURE_CREDENTIALS }}
           cluster-name: ctse-cluster
           resource-group: ctse-resource-group
 
