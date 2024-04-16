@@ -86,20 +86,15 @@ jobs:
       run: |
         docker push ctse2024/user-service:v1.0.0.0
 
-  CheckClusterConnectivity:
+  CheckClusterConfiguration:
     needs: Containerization
     runs-on: ubuntu-latest
-    name: Check Cluster Connectivity
+    name: Check Kubernetes Configuration
     steps:
-      - name: Check Cluster Connectivity
-        run: kubectl get nodes
+      - name: Set Kubernetes Context
+        run: kubectl config use-context ctse-cluster
 
-  CheckAPIServerAccess:
-    needs: Containerization
-    runs-on: ubuntu-latest
-    name: Check API Server Access
-    steps:
-      - name: Check API Server Access
+      - name: Verify Kubernetes Configuration
         run: kubectl cluster-info
 
   CheckClusterHealth:
@@ -114,7 +109,7 @@ jobs:
         run: az aks show --resource-group ctse-resource-group --name ctse-cluster --query 'provisioningState' -o table
 
   DeployToAKS:
-    needs: [Containerization, CheckClusterConnectivity, CheckAPIServerAccess, CheckClusterHealth]
+    needs: [Containerization, CheckClusterConfiguration, CheckClusterHealth]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
