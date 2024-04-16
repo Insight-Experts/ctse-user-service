@@ -107,7 +107,7 @@ jobs:
         az account show
         az group list
     - name: Set Azure subscription
-      run: az account set --subscription ${{ secrets.AZURE_CREDENTIALS.subscriptionId }}
+      run: az account set --subscription "${{ secrets.AZURE_CREDENTIALS.subscriptionId }}"
 
     - name: Deploy to AKS
       run: |
