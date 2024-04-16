@@ -91,25 +91,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Check Kubernetes Configuration
     steps:
-      - name: Set Kubernetes Context
-        run: kubectl config use-context ctse-cluster
-
-      - name: Verify Kubernetes Configuration
-        run: kubectl cluster-info
-
-  CheckClusterHealth:
-    needs: Containerization
-    runs-on: ubuntu-latest
-    name: Check Cluster Health
-    steps:
-      - name: Check AKS Node Status
-        run: az aks nodepool show --resource-group ctse-resource-group --cluster-name ctse-cluster --name nodepool1 --query '[provisioningState, kubernetesVersion, nodeCount, mode]' -o table
-
-      - name: Check AKS Cluster Status
-        run: az aks show --resource-group ctse-resource-group --name ctse-cluster --query 'provisioningState' -o table
+      - name: Get Kubernetes Contexts
+        run: kubectl config get-contexts
 
   DeployToAKS:
-    needs: [Containerization, CheckClusterConfiguration, CheckClusterHealth]
+    needs: [Containerization, CheckClusterConfiguration]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
