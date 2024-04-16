@@ -105,3 +105,4 @@ jobs:
           manifests: kubernetes/user-deployment.yaml, kubernetes/user-service.yaml
           namespace: default
           images: ctse2024/user-service:v1.0.0.0
+          args: --validate=false
