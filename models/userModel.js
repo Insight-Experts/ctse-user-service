@@ -16,7 +16,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    address: {
+    nic: {
       type: String,
       required: true,
     },
