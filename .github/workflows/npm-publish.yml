@@ -112,6 +112,6 @@ jobs:
       run: kubectl apply -f kubernetes/
     - name: Deploy to AKS
       run: |
-        kubectl set image kubernetes/user-deployment user=ctse2024/user-service:v1.0.0.0
+        kubectl set image deployment/user-deployment user=ctse2024/user-service:v1.0.0.0
     - name: Get Service IP Address
       run: kubectl get services
