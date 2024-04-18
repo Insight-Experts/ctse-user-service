@@ -106,12 +106,9 @@ jobs:
       run: az account set --subscription ${{ secrets.AZ_SUBSCRIPTION_ID }}
     - name: Set AKS context
       run: az aks get-credentials --resource-group ${{ secrets.AZ_RESOURCE_GROUP }} --name ${{ secrets.AZ_CLUSTER }}
-    - name: Pull Docker Image
-      run: docker pull ctse2024/user-service:v1.0.0.0
-    - name: Set Kubernetes Files
-      run: kubectl apply -f kubernetes/
     - name: Deploy to AKS
-      run: |
-        kubectl set image deployment/user-deployment user=ctse2024/user-service:v1.0.0.0
+      run: kubectl apply -f kubernetes/
+    - name: Get Service IP Address
+      run: kubectl get services
     - name: Get Service IP Address
       run: kubectl get services

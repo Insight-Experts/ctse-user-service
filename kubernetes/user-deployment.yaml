@@ -7,6 +7,8 @@ spec:
   selector:
     matchLabels:
       app: user
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -14,6 +16,6 @@ spec:
     spec:
       containers:
       - name: user
-        image: ctse2024/user-service:v1.0.0.0
+        image: ctse2024/user-service:${{ github.run_id }}
         ports:
         - containerPort: 5002
