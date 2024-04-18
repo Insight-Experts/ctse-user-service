@@ -110,5 +110,3 @@ jobs:
       run: kubectl apply -f kubernetes/
     - name: Get Service IP Address
       run: kubectl get services
-    - name: Get Service IP Address
-      run: kubectl get services
