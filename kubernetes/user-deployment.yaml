@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: user
-        image: ctse2024/user-service:${{ github.run_id }}
+        image: ctse2024/user-service:TAG  # Placeholder for the tag
         ports:
         - containerPort: 5002
