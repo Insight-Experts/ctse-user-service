@@ -58,6 +58,7 @@ jobs:
         path: snyk_report.json
 
   SecretsScanning:
+    needs: BuildandTest
     runs-on: ubuntu-latest
     name: Secrets Scanning
     steps:
@@ -72,7 +73,7 @@ jobs:
         run: git-leaks
         
   Containerization:
-    needs: SnykSecurityScan
+    needs: [SnykSecurityScan, SecretsScanning]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
